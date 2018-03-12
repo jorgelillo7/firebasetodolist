@@ -57,6 +57,9 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
             todoItem.objectId = newItem.key
             //then, we used the reference to set the value on that ID
             newItem.setValue(todoItem)
+
+            toDoItemList!!.add(todoItem)
+            adapter.notifyDataSetChanged()
             dialog.dismiss()
             Toast.makeText(this, "Item saved with ID " + todoItem.objectId, Toast.LENGTH_SHORT).show()
         }
@@ -92,7 +95,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
                 todoItem.objectId = currentItem.key
                 todoItem.done = map.get("done") as Boolean?
                 todoItem.itemText = map.get("itemText") as String?
-                toDoItemList!!.add(todoItem);
+                toDoItemList!!.add(todoItem)
             }
         }
         //alert adapter that has changed
@@ -101,7 +104,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
 
     override fun modifyItemState(itemObjectId: String, isDone: Boolean) {
         val itemReference = mDatabase.child(Constants.FIREBASE_ITEM).child(itemObjectId)
-        itemReference.child("done").setValue(isDone);
+        itemReference.child("done").setValue(isDone)
     }
     //delete an item
     override fun onItemDelete(itemObjectId: String) {
@@ -109,6 +112,18 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
         val itemReference = mDatabase.child(Constants.FIREBASE_ITEM).child(itemObjectId)
         //deletion can be done via removeValue() method
         itemReference.removeValue()
+
+        var indexToRemove = -1
+        toDoItemList!!.forEachIndexed { index: Int, i ->
+            if(i.objectId == itemObjectId){
+                indexToRemove = index
+            }
+        }
+
+        if(indexToRemove != -1)
+            toDoItemList!!.removeAt(indexToRemove)
+
+        adapter.notifyDataSetChanged()
     }
 
 }
