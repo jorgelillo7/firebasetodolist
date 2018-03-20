@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
     private fun addNewItemDialog() {
         val alert = AlertDialog.Builder(this)
         val itemEditText = EditText(this)
-        alert.setMessage("Add New Item")
+        alert.setMessage("Add New Firebase Item")
         alert.setTitle("Enter To Do Item Text")
         alert.setView(itemEditText)
         alert.setPositiveButton("Submit") { dialog, positiveButton ->
@@ -105,6 +105,13 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
     override fun modifyItemState(itemObjectId: String, isDone: Boolean) {
         val itemReference = mDatabase.child(Constants.FIREBASE_ITEM).child(itemObjectId)
         itemReference.child("done").setValue(isDone)
+        toDoItemList!!.forEachIndexed { index: Int, i ->
+            if(i.objectId == itemObjectId){
+                i.done = isDone
+            }
+        }
+
+        adapter.notifyDataSetChanged()
     }
     //delete an item
     override fun onItemDelete(itemObjectId: String) {
